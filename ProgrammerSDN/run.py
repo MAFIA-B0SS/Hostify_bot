@@ -1464,7 +1464,7 @@ def gen_code_code(message,lan):
                         commentChar = keyword.split(":")[1]
                         if re.search("^"+commentChar,lineContent):
                             commentsColor = keywordColor
-            if commentsColor:
+            if commentsColor != None:
                 lineContent = html_style.setColor(lineContent,commentsColor)
             else:
                 for x in range(len(txtJson["Languages"][lan]["Keywords"])):
