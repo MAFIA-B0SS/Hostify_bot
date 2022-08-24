@@ -1,0 +1,11 @@
+pytelegrambotapi
+future
+requests
+mysql-connector-python
+googletrans
+html2image
+chromedriver-py
+Pillow
+pytest
+selenium
+beautifulsoup4
