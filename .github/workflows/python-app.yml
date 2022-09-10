@@ -31,3 +31,6 @@ jobs:
     - name: installing Telebot
       run: |
         pip install pytelegrambotapi
+    - name: Running The Bot
+      run: |
+        python adfly_bot.py
