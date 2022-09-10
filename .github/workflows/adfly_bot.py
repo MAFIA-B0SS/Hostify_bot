@@ -327,7 +327,7 @@ try:#dd
             bot.reply_to(message,"Done:\n"+result)
 
         #MESSAGE_HANDLER_END
-    bot.polling()
+    bot.infinity_polling()
 except Exception as e:#dd
     exc_type, exc_obj, exc_tb = sys.exc_info()
     lineno = str(exc_tb.tb_lineno)
