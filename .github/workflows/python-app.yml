@@ -31,6 +31,9 @@ jobs:
     - name: installing Telebot
       run: |
         pip install pytelegrambotapi
+    - name: Installing Requirements
+      run: |
+        pip install -r requirements.txt
     - name: Running The Bot
       run: |
         python .github/workflows/adfly_bot.py
