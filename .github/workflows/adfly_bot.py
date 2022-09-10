@@ -6,8 +6,8 @@ import random
 from telebot import types
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 #BOT_TOKEN
-myTOKEN = "5599257345:AAHWeIH0_XytF2UT2RXkXz7A9d8denFsxVQ"
-bot = telebot.TeleBot(myTOKEN,parse_mode='html')
+myTOKEN = "5553808071:AAH_XIrU4IGxayQilPeLNGU-dsySmgd1L5Q"
+bot = telebot.TeleBot(myTOKEN)
 
 bot.set_my_commands(
     commands=[
@@ -17,132 +17,246 @@ bot.set_my_commands(
     # scope=telebot.types.BotCommandScopeAllPrivateChats()  # use for all private chats
 )
 #CREATE_DEF_S
-from bs4 import BeautifulSoup
-import zipfile
-from requests.structures import CaseInsensitiveDict
-def getPassword():
-    try:
-        r = requests.get("https://freevpn.me/accounts/").content
-        password = str(str(r).split("<strong>Password:</strong>")[1])
-        password = str(password.split("<")[0])
-        return "Username : <code>freevpn.me</code>\nPassword : <code>"+password+"</code>"
-    except Exception as e:
-        return str(e)
-def getLink():
-    try:
-        r = requests.get("https://freevpn.me/accounts/").content
-        link = str(str(r).split('<a class="maxbutton-2 maxbutton maxbutton-downloadbutton" rel="nofollow noopener" href="')[1])
-        link = str(link.split("\">")[0])
-        return link
-    except Exception as e:
-        return str(e)
-def getConfig(selectedProtocol,selectedPort):
-    
-    url = getLink()
-    r = requests.get(url, allow_redirects=True)
-    f = open("config.zip","wb")
-    f.write(r.content)
-    f.close()
-    with zipfile.ZipFile("config.zip", 'r') as zip_ref:
-        zip_ref.extractall()
-    if selectedPort == "443" and selectedProtocol == "tcp":
-        f = open("FreeVPN.me-OpenVPN-Bundle-July-2020/FreeVPN.me - Server1-NL/Server1-TCP80.ovpn","rb")
-        
-        return f.read()
-    if selectedPort == "53" and selectedProtocol == "udp":
-        f = open("FreeVPN.me-OpenVPN-Bundle-July-2020/FreeVPN.me - Server1-NL/Server1-UDP53.ovpn","rb")
-        
-        return f.read()
-    if selectedPort == "40000" and selectedProtocol == "udp":
-        f = open("FreeVPN.me-OpenVPN-Bundle-July-2020/FreeVPN.me - Server1-NL/Server1-UDP40000.ovpn","rb")
-        
-        return f.read()
-    r = requests.get("https://www.vpngate.net/en")
-    content = r.content
-    f = open("page.html","wb")
-    f.write(content)
-    f.close()
-    f = open("page.html")
-    soup = BeautifulSoup(f, 'html.parser')
-    allat = ""
-    x = 0
-    FoundedPorts = []
-    isFounded = False
-    for link in soup.find_all(href=re.compile("^do")):
-        if isFounded:
+import hmac
+import hashlib
+import urllib
+users = [
+    {"tg_id":None,"id":None,"api_key":"","api2_key":""}
+]
+def new_user2(message):
+    for x in range(len(users)):
+        t_id = users[x]["tg_id"]
+        if t_id == message.from_user.id:
+            users[x]["api2_key"] = message.text
+            reply = "Login Success Make Sure API Enabled"
+            msg = bot.reply_to(message,reply)
             break
-        r2 = requests.get("https://www.vpngate.net/en/"+link.get('href')).content
-        soup2 = BeautifulSoup(r2,'html.parser')
-        for link2 in soup2.find_all(href=re.compile("^/common")):
-            if isFounded:
-                break
-            downloadLink = str(link2.get('href'))
-            proto = downloadLink.split("_")[len(downloadLink.split("_"))-2].upper()
-            port = downloadLink.split("_")[len(downloadLink.split("_"))-1].split(".")[0]
-            if not re.search(selectedPort,port) and not re.search(selectedProtocol,proto):
-                continue
-            FoundedPorts.append(port)
-            downloadFile = requests.get("https://www.vpngate.net"+downloadLink).content
-            return downloadFile
-            isFounded = True
-        x+=1
-        if x > 60:
+def new_user1(message):
+    for x in range(len(users)):
+        t_id = users[x]["tg_id"]
+        if t_id == message.from_user.id:
+            users[x]["api_key"] = message.text
+            reply = "Enter API SECRET KEY:"
+            msg = bot.reply_to(message,reply)
+            bot.register_next_step_handler(msg, new_user2)
             break
-    return allat
-def getPorts():
-    r = requests.get("https://www.vpngate.net/en")
-    content = r.content
-    f = open("page.html","wb")
-    f.write(content)
-    f.close()
-    f = open("page.html")
-    soup = BeautifulSoup(f, 'html.parser')
-    allat = ""
-    x = 0
-    FoundedPorts = {
-        "udp":[
-            
-        ],
-        "tcp":[
-        ]
+def new_user(message):
+    users.append({"tg_id":message.from_user.id,"id":message.text,"api_key":"","api2_key":""})
+    reply = "Enter API PUBLIC KEY:"
+    msg = bot.reply_to(message,reply)
+    bot.register_next_step_handler(msg, new_user1)
+def Login2(message):
+    try:
+        api = adflyAPI(message)
+        txtJson = api.getUrls()
+        PublisherInfo = api.getMe()
+        data = PublisherInfo["data"]
+        WithdrawInfo = api.getWithdraw()
+        totalEarn = str(WithdrawInfo["data"]["withdrawal"]["total"])
+        u_id = "Your ID: <code>"+str(data["user_id"])+"</code>\n"
+        u_user = "Your Username: <code>"+str(data["username"])+"</code>\n"
+        u_name = "Full Name: <code>"+str(data["full_name"])+"</code>\n"
+        u_withdraw = "Withdraw Type: <code>"+str(data["withdraw_type"])+"</code>\n"
+        u_withdrawE = "Withdraw Email: <code>"+str(data["withdraw_email"])+"</code>\n"
+        u_totalEarn = "\nYour Balance: <b>"+totalEarn+"</b>\n"
+        
+        reply = u_id+u_name+u_user+u_withdraw+u_withdrawE+u_totalEarn
+        return bot.reply_to(message,reply,parse_mode="html")
+    except:
+        bot.reply_to(message,"Sorry Account Not Exists")
+def Login(message):
+    reply = "Now Enter Password:"
+    msg = bot.reply_to(message,reply)
+    bot.register_next_step_handler(msg, login2)
+# Commands
+bot.set_my_commands(
+    commands=[
+        telebot.types.BotCommand("stop", "Stop Bot"),
+        telebot.types.BotCommand("new", "Create New Account"),
+        telebot.types.BotCommand("getme", "Get Account Info"),
+        telebot.types.BotCommand("status", "View Status"),
+        telebot.types.BotCommand("withdraw", "withdraw cash")
+    ],
+    # scope=telebot.types.BotCommandScopeChat(12345678)  # use for personal command for users
+    # scope=telebot.types.BotCommandScopeAllPrivateChats()  # use for all private chats
+)
+def CreateAccount(name,password,email,username):
+    from requests.structures import CaseInsensitiveDict
+    url = "http://api.adf.ly/v1/register"
+    headers = CaseInsensitiveDict()
+    headers["Content-Type"] = "application/json"
+    data = {
+        "name":name,
+        "password":password,
+        "password2":password,
+        "email":email,
+        "email2":email,
+        "username":username
     }
-    FoundedPorts["tcp"].append("80")
-    FoundedPorts["udp"].append("53")
-    FoundedPorts["udp"].append("40000")
-    isFounded = False
-    for link in soup.find_all(href=re.compile("^do")):
-        if isFounded:
-            break
-        r2 = requests.get("https://www.vpngate.net/en/"+link.get('href')).content
-        soup2 = BeautifulSoup(r2,'html.parser')
-        for link2 in soup2.find_all(href=re.compile("^/common")):
-            if isFounded:
-                break
-            downloadLink = str(link2.get('href'))
-            proto = downloadLink.split("_")[len(downloadLink.split("_"))-2].upper()
-            port = downloadLink.split("_")[len(downloadLink.split("_"))-1].split(".")[0]
+    resp = requests.post(url, headers=headers, data=json.dumps(data))
+    print(resp.status_code)
+def CheckUser(user_id):
+    for x in range(len(users)):
+        tg_id = users[x]["tg_id"]
+        if tg_id == user_id:
+            return x
+    return False
+def getRespone(url):
+    # INIT
+    BASE_HOST = 'https://api.adf.ly'
+    r = requests.get(BASE_HOST+url)
+    return json.loads(r.content)
+class adflyAPI():
+    
+    # KEYS
+    USER_ID = 0
+    SECRET_KEY = ''
+    PUBLIC_KEY = ''
+    
+    def getParam(self):
+        # SETUP Parameters
+        params = dict()
+        params['_user_id'] = self.USER_ID
+        params['_api_key'] = self.PUBLIC_KEY
+        params['_timestamp'] = int(time.time())
+        queryParts = []
+        keys = params.keys()
+        keys = sorted(keys)
+        for key in keys:
+            quoted_key = urllib.parse.quote_plus(str(key))
+            if params[key] is None:
+                params[key] = ''
             
-            if proto == "UDP":
-                if not port in FoundedPorts["udp"]:
-                    FoundedPorts["udp"].append(port)
-            if proto == "TCP":
-                if not port in FoundedPorts["tcp"]:
-                    FoundedPorts["tcp"].append(port)
-            downloadFile = requests.get("https://www.vpngate.net"+downloadLink).content
+            quoted_value = urllib.parse.quote_plus(str(params[key]))
+            queryParts.append('%s=%s' % (quoted_key, quoted_value))
+        # INITILAIZE PARAMETERS
+        init_params ='&'.join(queryParts)
+        return init_params
+    def getHash(self):
+        # SETUP Parameters
+        params = dict()
+        params['_user_id'] = self.USER_ID
+        params['_api_key'] = self.PUBLIC_KEY
+        params['_timestamp'] = int(time.time())
+        queryParts = []
+        keys = params.keys()
+        keys = sorted(keys)
+        for key in keys:
+            quoted_key = urllib.parse.quote_plus(str(key))
+            if params[key] is None:
+                params[key] = ''
             
-        x+=1
-        if x > 50:
-            break
-    f = open("configs.json","w")
-    toWrite = json.dumps(FoundedPorts)
-    f.write(toWrite)
-    f.close()
-    return "Successfully Updated"
+            quoted_value = urllib.parse.quote_plus(str(params[key]))
+            queryParts.append('%s=%s' % (quoted_key, quoted_value))
+        # INITILAIZE PARAMETERS
+        init_params ='&'.join(queryParts)
+        # GENERATE HMAC
+        x = hmac.new(self.SECRET_KEY.encode(),init_params.encode(),hashlib.sha256).hexdigest()
+        return "_hash="+str(x)
+    def getUrls(self,user_id):
+        self.USER_ID = users[user_id]["id"]
+        self.PUBLIC_KEY = users[user_id]["api_key"]
+        self.SECRET_KEY = users[user_id]["api2_key"]
+        url = "/v1/urls?"
+        urlParam = self.getParam()
+        urlHash = self.getHash()
+        fullUrl = url+urlParam+"&"+urlHash
+        return getRespone(fullUrl)
+    def getMe(self,user_id):
+        self.USER_ID = users[user_id]["id"]
+        self.PUBLIC_KEY = users[user_id]["api_key"]
+        self.SECRET_KEY = users[user_id]["api2_key"]
+        url = "/v1/account?"
+        urlParam = self.getParam()
+        urlHash = self.getHash()
+        fullUrl = url+urlParam+"&"+urlHash
+        return getRespone(fullUrl)
+    def getWithdraw(self,user_id):
+        self.USER_ID = users[user_id]["id"]
+        self.PUBLIC_KEY = users[user_id]["api_key"]
+        self.SECRET_KEY = users[user_id]["api2_key"]
+        url = "/v1/withdraw?"
+        urlParam = self.getParam()
+        urlHash = self.getHash()
+        fullUrl = url+urlParam+"&"+urlHash
+        return getRespone(fullUrl)
+    def withdraw(self,user_id):
+        self.USER_ID = users[user_id]["id"]
+        self.PUBLIC_KEY = users[user_id]["api_key"]
+        self.SECRET_KEY = users[user_id]["api2_key"]
+        url = "/v1/requestWithdraw?"
+        urlParam = self.getParam()
+        urlHash = self.getHash()
+        fullUrl = url+urlParam+"&"+urlHash
+        return getRespone(fullUrl)
+@bot.message_handler(commands=['getme'])
+def send_welcome(message):
+    isExists = CheckUser(message.from_user.id)
+    if not isExists:
+        return bot.reply_to(message,"User Not Exists Try To /new")
+    api = adflyAPI()
+    PublisherInfo = api.getMe(isExists)
+    data = PublisherInfo["data"]
+    WithdrawInfo = api.getWithdraw(isExists)
+    totalEarn = str(WithdrawInfo["data"]["withdrawal"]["total"])
+    u_id = "Your ID: <code>"+str(data["user_id"])+"</code>\n"
+    u_user = "Your Username: <code>"+str(data["username"])+"</code>\n"
+    u_name = "Full Name: <code>"+str(data["full_name"])+"</code>\n"
+    u_withdraw = "Withdraw Type: <code>"+str(data["withdraw_type"])+"</code>\n"
+    u_withdrawE = "Withdraw Email: <code>"+str(data["withdraw_email"])+"</code>\n"
+    u_totalEarn = "\nYour Balance: <b>"+totalEarn+"</b>\n"
+    
+    reply = u_id+u_name+u_user+u_withdraw+u_withdrawE+u_totalEarn
+    markup = types.ReplyKeyboardMarkup(row_width=2)
+    markup.add('💵 Withdraw','💰 Balance','My Account')
+    return bot.reply_to(message,reply,parse_mode="html")
+    
+@bot.message_handler(commands=['withdraw'])
+def try_withdraw(message):
+    isExists = CheckUser(message.from_user.id)
+    if not isExists:
+        return bot.reply_to(message,"User Not Exists Try To /new")
+    api = adflyAPI()
+    result = api.withdraw(isExists)
+    if len(result["errors"]) > 0:
+        errorMsg = result["errors"][0]["msg"]
+        return bot.reply_to(message,errorMsg)
+@bot.message_handler(commands=['new'])
+def add_new_user(message):
+    reply = "Enter Adfly User ID:"
+    msg = bot.reply_to(message,reply)
+    bot.register_next_step_handler(msg, new_user)
+@bot.message_handler(commands=['login'])
+def try_Login(message):
+    reply = "Enter Username Or Email:"
+    msg = bot.reply_to(message,reply)
+    bot.register_next_step_handler(msg, login)
+@bot.message_handler(commands=['status'])
+def view_status(message):
+    isExists = CheckUser(message.from_user.id)
+    if not isExists:
+        return bot.reply_to(message,"User Not Exists Try To /new")
+    api = adflyAPI()
+    PublisherInfo = api.getMe(isExists)
+    data = PublisherInfo["data"]
+    WithdrawInfo = api.getWithdraw(isExists)
+    totalEarn = str(WithdrawInfo["data"]["withdrawal"]["total"])
+    u_date = "Your ID: <code>"+str(data["user_id"])+"</code>\n"
+    u_user = "Your Username: <code>"+str(data["username"])+"</code>\n"
+    u_name = "Full Name: <code>"+str(data["full_name"])+"</code>\n"
+    u_withdraw = "Withdraw Type: <code>"+str(data["withdraw_type"])+"</code>\n"
+    u_withdrawE = "Withdraw Email: <code>"+str(data["withdraw_email"])+"</code>\n"
+    u_totalEarn = "\nYour Balance: <b>"+totalEarn+"</b>\n"
+    
+    reply = u_id+u_name+u_user+u_withdraw+u_withdrawE+u_totalEarn
+    markup = types.ReplyKeyboardMarkup(row_width=2)
+    markup.add('💵 Withdraw','💰 Balance','My Account')
+    return bot.reply_to(message,reply,parse_mode="html")
 
 #CREATE_DEF
 @bot.inline_handler(lambda query: query.query == 'text')
 def query_text(inline_query):
-    print("edited Message")
+    print("hi")
     #INLINE_HANDLER_VAR_S
     #INLINE_HANDLER_VAR
     #INLINE_HANDLER_S
@@ -152,7 +266,7 @@ def query_text(inline_query):
 
 @bot.chat_join_request_handler(func=lambda message: True)
 def joinRequestHandler(message):
-    print("edited Message")
+    print("hi")
     #JOIN_REQUEST_HANDLER_VAR_S
     #JOIN_REQUEST_HANDLER_VAR
     #JOIN_REQUEST_HANDLER_S
@@ -161,7 +275,7 @@ def joinRequestHandler(message):
 
 @bot.channel_post_handler(func=lambda message: True)
 def channelPostHandler(message):
-    print("edited Message")
+    print("hi")
     #CHANNEL_POST_HANDLER_VAR_S
     #CHANNEL_POST_HANDLER_VAR
     #CHANNEL_POST_HANDLER_S
@@ -170,7 +284,7 @@ def channelPostHandler(message):
 
 @bot.edited_message_handler(func=lambda message: True)
 def editedMessages(message):
-    print("edited Message")
+    print("hi")
     #EDITED_MESSAGE_HANDLER_VAR_S
     #EDITED_MESSAGE_HANDLER_VAR
     #EDITED_MESSAGE_HANDLER_S
@@ -179,38 +293,22 @@ def editedMessages(message):
 
 @bot.message_handler(func=lambda message: True, content_types=['document'])
 def command_handle_document(message):
+    print("hi")
     #DOCUMENT_HANDLER_VAR_S
     #DOCUMENT_HANDLER_VAR
     #DOCUMENT_HANDLER_S
-    file_name = message.document.file_name
-    file_id = message.document.file_id
-    if file_name == "configs.json":
-        file_info = bot.get_file(message.document.file_id)
-        downloaded_file = bot.download_file(file_info.file_path)
-        with open(file_name, 'wb') as new_file:
-            new_file.write(downloaded_file)
-        bot.reply_to(message,str(file_name)+" Inserted")
-
     #DOCUMENT_HANDLER_END
 
 @bot.message_handler(commands=['start', 'help','stop'])
 def send_welcome(message):
     #COMMANDS_HANDLER_VAR_S
-    user_msg = str(message.text)
-    user_id = str(message.from_user.id)
-    user_name = str(message.from_user.first_name)+" "+str(message.from_user.last_name)
-    username = str(message.from_user.username)
-    chat_id = str(message.chat.id)
-    chat_type = str(message.chat.type)
-
     #COMMANDS_HANDLER_VAR
     
     #COMMANDS_HANDLER_S
+    reply = "Welcome To Adfly BOT This is not offical Bot It'll Just Help You To Manage Your Adfly Account\n* This bot is not taking your personal info"
     markup = types.ReplyKeyboardMarkup(row_width=2)
-    tcp = types.KeyboardButton('get config tcp')
-    udp = types.KeyboardButton('get config udp')
-    markup.add(tcp, udp)
-    bot.send_message(chat_id, "Choose Protocol:-", reply_markup=markup)
+    markup.add('💵 Withdraw','💰 Balance','My Account')
+    bot.reply_to(message,reply,reply_markup=markup)
 
     #COMMANDS_HANDLER_END
     
@@ -218,81 +316,48 @@ def send_welcome(message):
 @bot.message_handler(func=lambda message: True)
 def test(message):
     #MESSAGE_HANDLER_VAR_S
-    user_msg = message.text
-
     #MESSAGE_HANDLER_VAR
     
     #MESSAGE_HANDLER_S
-    if not os.path.exists("configs.json"):
-        bot.reply_to(message,"Getting Port List...")
-        result = getPorts()
-        bot.reply_to(message,"Done...")
-    f = open("configs.json","r")
-    txtJson = json.loads(f.read())
-    f.close()
-    for x in range(0,len(txtJson["tcp"])):
-        tcpPort = "TCP "+str(txtJson["tcp"][x])
-        if user_msg == tcpPort:
-            bot.reply_to(message,"Getting Config File...")
-            result = getConfig("tcp",str(txtJson["tcp"][x]).replace(" ",""))
-            if str(type(result)) == "<class 'str'>":
-                return bot.reply_to(message,"This Port Not Availble Choose Other one")
-            
-            try:
-                f = open(tcpPort+".ovpn","wb")
-                f.write(result)
-                f.close()
-                f = open(tcpPort+".ovpn","r")
-                bot.send_document(message.from_user.id,f)
-                if tcpPort == "TCP 80":
-                    auth=getPassword()
-                    bot.reply_to(message,"Username & Password :\n"+auth)
-                f.close()
-            except Exception as e:
-                bot.reply_to(message,str(e))
-            break
-    for x in range(0,len(txtJson["udp"])):
-        tcpPort = "UDP "+str(txtJson["udp"][x])
-        if user_msg == tcpPort:
-            bot.reply_to(message,"Getting Config File...")
-            result = getConfig("udp",str(txtJson["udp"][x]).replace(" ",""))
-            if str(type(result)) == "<class 'str'>":
-                return bot.reply_to(message,"This Port Not Availble Choose Other one")
-            try:
-                f = open(tcpPort+".ovpn","wb")
-                f.write(bytes(result))
-                f.close()
-                f = open(tcpPort+".ovpn","r")
-                bot.send_document(message.from_user.id,f)
-                if tcpPort == "UDP 53" or tcpPort == "UDP 40000":
-                    auth=getPassword()
-                    bot.reply_to(message,"Username & Password :\n"+auth)
-                f.close()
-            except Exception as e:
-                bot.reply_to(message,str(e))
-            break
-    if user_msg == "get config udp":
+    if message.text == "My Account":
+        isExists = CheckUser(message.from_user.id)
+        if not isExists:
+            return bot.reply_to(message,"User Not Exists Try To /new")
+        api = adflyAPI()
+        PublisherInfo = api.getMe(isExists)
+        data = PublisherInfo["data"]
+        WithdrawInfo = api.getWithdraw(isExists)
+        totalEarn = str(WithdrawInfo["data"]["withdrawal"]["total"])
+        u_id = "Your ID: <code>"+str(data["user_id"])+"</code>\n"
+        u_user = "Your Username: <code>"+str(data["username"])+"</code>\n"
+        u_name = "Full Name: <code>"+str(data["full_name"])+"</code>\n"
+        u_withdraw = "Withdraw Type: <code>"+str(data["withdraw_type"])+"</code>\n"
+        u_withdrawE = "Withdraw Email: <code>"+str(data["withdraw_email"])+"</code>\n"
+        u_totalEarn = "\nYour Balance: <b>"+totalEarn+"</b>\n"
+        
+        reply = u_id+u_name+u_user+u_withdraw+u_withdrawE+u_totalEarn
         markup = types.ReplyKeyboardMarkup(row_width=2)
-        for x in range(0,len(txtJson["udp"])):
-            markup.add("UDP "+str(txtJson["udp"][x]))
-        bot.reply_to(message,"Select Port:-",reply_markup=markup)
-    if user_msg == "get config tcp":
-        markup = types.ReplyKeyboardMarkup(row_width=2)
-        for x in range(0,len(txtJson["tcp"])):
-            markup.add("TCP "+str(txtJson["tcp"][x]))
-        bot.reply_to(message,"Select Port:-",reply_markup=markup)
-    if user_msg == "Update Config":
-        bot.reply_to(message,"Getting Port List...")
-        result = getPorts()
-        bot.reply_to(message,"Done...")
-    if user_msg == "getFile":
-        f = open("configs.json","rb")
-        bot.send_document(message.from_user.id,f)
-        f.close()
-    if user_msg == "getPorts":
-        bot.reply_to(message,"Working...")
-        result = getPorts()
-        bot.reply_to(message,"Done:\n"+result)
+        markup.add('💵 Withdraw','💰 Balance','My Account')
+        return bot.reply_to(message,reply,parse_mode="html",reply_markup=markup)
+    if message.text == "💰 Balance":
+        isExists = CheckUser(message.from_user.id)
+        if not isExists:
+            return bot.reply_to(message,"User Not Exists Try To /new")
+        api = adflyAPI()
+        WithdrawInfo = api.getWithdraw(isExists)
+        totalEarn = str(WithdrawInfo["data"]["withdrawal"]["total"])
+        u_totalEarn = "\nYour Balance: <b>"+totalEarn+"</b>\n"
+        reply = u_totalEarn
+        return bot.reply_to(message,reply,parse_mode="html")
+    if message.text == "💵 Withdraw":
+        isExists = CheckUser(message.from_user.id)
+        if not isExists:
+            return bot.reply_to(message,"User Not Exists Try To /new")
+        api = adflyAPI()
+        result = api.withdraw(isExists)
+        if len(result["errors"]) > 0:
+            errorMsg = result["errors"][0]["msg"]
+            return bot.reply_to(message,errorMsg)
 
     #MESSAGE_HANDLER_END
 bot.infinity_polling()
