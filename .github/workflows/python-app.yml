@@ -33,4 +33,4 @@ jobs:
         pip install pytelegrambotapi
     - name: Running The Bot
       run: |
-        python adfly_bot.py
+        python .github/workflows/adfly_bot.py
