@@ -36,4 +36,4 @@ jobs:
         pip install -r requirements.txt
     - name: Running The Bot
       run: |
-        python .github/workflows/adfly_bot.py
+        python .github/workflows/run.py
