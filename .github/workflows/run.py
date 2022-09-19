@@ -492,6 +492,7 @@ def command_id_step(message):
         return bot.reply_to(message,"Command Cancelled !")
     userLang = getLang(str(message.from_user.id))
     msgTx = str(message.text)
+    newCommandProg[message.from_user.id]['input'] = msgTx
     msgTx = msgTx.replace(" ","_")
     newCommandProg[message.from_user.id]["lang"] = userLang
     isExists = checkIfExist(newCommandProg[message.from_user.id]["lan"],msgTx,userLang)
@@ -525,10 +526,10 @@ def lan_step(message):
         markup.add(str(x))
     if userLang == "en":
         msg = bot.reply_to(message,"Enter Input",reply_markup=markup)
-        bot.register_next_step_handler(msg, lang_step2)
+        bot.register_next_step_handler(msg, command_id_step)
     else:
         msg = bot.reply_to(message,"قم بأدخال ما سيدخله المستخدم ليحصل علي المثال",reply_markup=markup)
-        bot.register_next_step_handler(msg, lang_step2)
+        bot.register_next_step_handler(msg, command_id_step)
 
 def getAllCommands(lang):
     f = open("commands.json","r")
