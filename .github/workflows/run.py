@@ -825,11 +825,17 @@ def html_code_run(message,driver=None):
     driver = webdriver.Chrome(ChromeDriverManager().install())
     # S-E-R
     options = webdriver.ChromeOptions()
-    options.add_argument("--no-sandbox")
-    options.add_argument("--remote-debugging-port=9222")
-    options.headless = True
-    command_executor = "http://localhost:4444/wd/hub"
-    driver = webdriver.Remote(command_executor, desired_capabilities=options.to_capabilities())
+    options.add_argument("no-sandbox")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=800,600")
+    options.add_argument("--disable-dev-shm-usage")
+    options.set_headless()
+    host = "127.0.0.1"
+    driver = webdriver.Remote(
+            command_executor=f"http://{host}:4444/wd/hub",
+            desired_capabilities=DesiredCapabilities.CHROME,
+            options=options,
+        )
     # S-E-R
     driver.get("file:///app/"+saveAs)
     time.sleep(4)
