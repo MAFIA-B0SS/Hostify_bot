@@ -9,3 +9,4 @@ Pillow
 pytest
 selenium
 beautifulsoup4
+webdriver-manager
