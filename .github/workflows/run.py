@@ -822,6 +822,13 @@ def html_code_run(message,driver=None):
     f.write(code)
     f.close()
     driver = webdriver.Chrome()
+    # S-E-R
+    options.add_argument("--no-sandbox")
+    options.add_argument("--remote-debugging-port=9222")
+    options.headless = True
+    command_executor = "http://localhost:4444/wd/hub"
+    driver = webdriver.Remote(command_executor, desired_capabilities=options.to_capabilities())
+    # S-E-R
     driver.get("file:///app/"+saveAs)
     time.sleep(4)
         # Returns and base64 encoded string into image
