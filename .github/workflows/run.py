@@ -815,36 +815,39 @@ def java_code_run(message):
     code_run_output(message,content)
 
 def html_code_run(message,driver=None):
-    code = str(message.text)
-    from selenium import webdriver
-    from webdriver_manager.chrome import ChromeDriverManager
-    saveAs = str(message.from_user.id)+".html"
-    f = open(saveAs,"w")
-    f.write(code)
-    f.close()
-    driver = webdriver.Chrome(ChromeDriverManager().install())
-    # S-E-R
-    options = webdriver.ChromeOptions()
-    options.add_argument("no-sandbox")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=800,600")
-    options.add_argument("--disable-dev-shm-usage")
-    options.set_headless()
-    host = "127.0.0.1"
-    driver = webdriver.Remote(
-            command_executor=f"http://{host}:4444/wd/hub",
-            desired_capabilities=DesiredCapabilities.CHROME,
-            options=options,
-        )
-    # S-E-R
-    driver.get("file:///app/"+saveAs)
-    time.sleep(4)
-        # Returns and base64 encoded string into image
-    driver.save_screenshot('./image.png')
-    f = open("image.png","rb")
-    bot.send_photo(message.chat.id,f,caption="# HTML Preview")
-    f.close()
-    driver.quit()
+    try:
+        code = str(message.text)
+        from selenium import webdriver
+        from webdriver_manager.chrome import ChromeDriverManager
+        saveAs = str(message.from_user.id)+".html"
+        f = open(saveAs,"w")
+        f.write(code)
+        f.close()
+        driver = webdriver.Chrome(ChromeDriverManager().install())
+        # S-E-R
+        options = webdriver.ChromeOptions()
+        options.add_argument("no-sandbox")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=800,600")
+        options.add_argument("--disable-dev-shm-usage")
+        options.set_headless()
+        host = "127.0.0.1"
+        driver = webdriver.Remote(
+                command_executor=f"http://{host}:4444/wd/hub",
+                desired_capabilities=DesiredCapabilities.CHROME,
+                options=options,
+            )
+        # S-E-R
+        driver.get("file:///app/"+saveAs)
+        time.sleep(4)
+            # Returns and base64 encoded string into image
+        driver.save_screenshot('./image.png')
+        f = open("image.png","rb")
+        bot.send_photo(message.chat.id,f,caption="# HTML Preview")
+        f.close()
+        driver.quit()
+    except Exception as e:
+        bot.reply_to(message,str(e))
   
 def escape(html):
     """Returns the given HTML with ampersands, quotes and carets encoded."""
