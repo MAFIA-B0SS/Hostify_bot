@@ -838,7 +838,7 @@ def html_code_run(message,driver=None):
                 options=options,
             )
         # S-E-R
-        driver.get("file:///app/"+saveAs)
+        driver.get("https://google.com")
         time.sleep(4)
             # Returns and base64 encoded string into image
         driver.save_screenshot('./image.png')
