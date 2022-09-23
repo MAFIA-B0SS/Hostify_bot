@@ -821,7 +821,7 @@ def html_code_run(message,driver=None):
     f = open(saveAs,"w")
     f.write(code)
     f.close()
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(ChromeDriverManager().install())
     # S-E-R
     options.add_argument("--no-sandbox")
     options.add_argument("--remote-debugging-port=9222")
