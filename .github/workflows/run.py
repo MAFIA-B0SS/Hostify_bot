@@ -833,15 +833,14 @@ def html_code_run(message,driver=None):
         options.headless = True
         driver = webdriver.Chrome(chrome_options=options)
         # S-E-R
-        driver.get("file:///"+saveAs)
+        current_path = os.path.abspath(os.getcwd())
+        driver.get("file://"+current_path+"/"+saveAs)
         time.sleep(4)
             # Returns and base64 encoded string into image
         driver.save_screenshot('./image.png')
         f = open("image.png","rb")
         bot.send_photo(message.chat.id,f,caption="# HTML Preview")
         f.close()
-        current_path = os.path.abspath(os.getcwd())
-        bot.reply_to(message,str(current_path));
         driver.quit()
     except Exception as e:
         bot.reply_to(message,str(e))
