@@ -840,7 +840,8 @@ def html_code_run(message,driver=None):
         f = open("image.png","rb")
         bot.send_photo(message.chat.id,f,caption="# HTML Preview")
         f.close()
-        bot.reply_to(message,str(driver.title));
+        current_path = os.path.abspath(os.getcwd())
+        bot.reply_to(message,str(current_path));
         driver.quit()
     except Exception as e:
         bot.reply_to(message,str(e))
