@@ -836,10 +836,10 @@ def html_code_run(message,driver=None):
         driver.get("https://google.com")
         time.sleep(4)
             # Returns and base64 encoded string into image
-        # driver.save_screenshot('./image.png')
-        # f = open("image.png","rb")
-        # bot.send_photo(message.chat.id,f,caption="# HTML Preview")
-        # f.close()
+        driver.save_screenshot('./image.png')
+        f = open("image.png","rb")
+        bot.send_photo(message.chat.id,f,caption="# HTML Preview")
+        f.close()
         bot.reply_to(message,str(driver.title));
         driver.quit()
     except Exception as e:
