@@ -820,7 +820,7 @@ def html_code_run(message,driver=None):
         from selenium import webdriver
         from webdriver_manager.chrome import ChromeDriverManager
         saveAs = str(message.from_user.id)+".html"
-        f = open(saveAs,"w")
+        f = open("./"+saveAs,"w")
         f.write(code)
         f.close()
         
