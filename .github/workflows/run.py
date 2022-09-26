@@ -114,7 +114,7 @@ bot.set_my_commands(
 )
 
 commands = []
-
+current_path = os.path.abspath(os.getcwd())
 # Check If Commands FILE IS EXISTS
 if not os.path.exists("commands.json"):
     try:
@@ -816,6 +816,7 @@ def java_code_run(message):
 
 def html_code_run(message,driver=None):
     try:
+        global current_path
         code = str(message.text)
         from selenium import webdriver
         from webdriver_manager.chrome import ChromeDriverManager
@@ -833,7 +834,7 @@ def html_code_run(message,driver=None):
         options.headless = True
         driver = webdriver.Chrome(chrome_options=options)
         # S-E-R
-        current_path = os.path.abspath(os.getcwd())
+        
         driver.get("file://"+current_path+"/"+saveAs)
         time.sleep(4)
             # Returns and base64 encoded string into image
@@ -1132,7 +1133,13 @@ def get_example(message,examples,link,lan):
     for x in range(len(examples)):
         if selectedExample == str(examples[x]["title"]):
             from selenium import webdriver
-            driver = webdriver.Chrome()
+            options = webdriver.chrome.options.Options();
+            options.add_argument("no-sandbox")
+            options.add_argument("--disable-gpu")
+            options.add_argument("--window-size=800,600")
+            options.add_argument("--disable-dev-shm-usage")
+            options.headless = True
+            driver = webdriver.Chrome(chrome_options=options)
             try:
                 theLink = link+str(examples[x]["link"])
                 driver.get(theLink)
@@ -1161,7 +1168,7 @@ def get_example(message,examples,link,lan):
                     f = open(saveAs,"w")
                     f.write(str(Code.text))
                     f.close()
-                    driver.get("file:///app/"+saveAs)
+                    driver.get("file://"+current_path+'/'+saveAs)
                     time.sleep(4)
                         # Returns and base64 encoded string into image
                     driver.save_screenshot('./image.png')
