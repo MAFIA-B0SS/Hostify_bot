@@ -833,7 +833,7 @@ def html_code_run(message,driver=None):
         options.headless = True
         driver = webdriver.Chrome(chrome_options=options)
         # S-E-R
-        driver.get("https://google.com")
+        driver.get("file:///"+saveAs)
         time.sleep(4)
             # Returns and base64 encoded string into image
         driver.save_screenshot('./image.png')
