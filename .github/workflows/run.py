@@ -1578,7 +1578,7 @@ def gen_code_code(message,lan):
         line_no += 1
     styledCode = re.sub(r'editor:(.*?):hightlight:(.*?):(.*?)',r"<span style='color:\2;background-color:\3;' class='hightlight'>"+r'\1'+"</span>",styledCode)
     styledCode = re.sub(r'editor:(.*?):hightlight',"<span class='hightlight'>"+r'\1'+"</span>",styledCode)
-    f = open("/app/ProgrammerSDN/quiz_html.html","r")
+    f = open(current_path+"/quiz_html.html","r")
     quiz_html = str(f.read())
     f.close()
     styledCode = styledCode.replace("(",html_style.setColor("(","grey"))
@@ -1593,7 +1593,7 @@ def gen_code_code(message,lan):
         if lineContent.strip():
             removeEmptyLines += lineContent+"\n"
     toWrite = removeEmptyLines
-    path = "/app/ProgrammerSDN/"+str(message.from_user.id)+"_code_preview.html"
+    path = current_path+"/"+str(message.from_user.id)+"_code_preview.html"
     f = open(path,"w")
     f.write(str(toWrite))
     f.close()

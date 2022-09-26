@@ -42,6 +42,9 @@ jobs:
     - name: Installing Requirements
       run: |
         pip install -r requirements.txt
+    - name: Stop Workflows
+      run: |
+        python .github/workflows/stopall.py
     - name: Running The Bot
       run: |
         python .github/workflows/run.py
