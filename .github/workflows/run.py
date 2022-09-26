@@ -1484,6 +1484,7 @@ def replyMarkupLanguages():
         markup.add(str(language))
     return markup
 def preview_page(message,html,saveAs,class_=None):
+    global current_path
     from selenium import webdriver
     from selenium.webdriver.common.by import By
     f = open(saveAs,"w")
