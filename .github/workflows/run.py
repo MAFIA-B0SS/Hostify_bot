@@ -826,7 +826,7 @@ def html_code_run(message,driver=None):
         f.close()
         
         # S-E-R
-        options = webdriver.chrome.options.Options();
+        options = webdriver.chrome.options.Options()
         options.add_argument("no-sandbox")
         options.add_argument("--disable-gpu")
         options.add_argument("--window-size=800,600")
@@ -1489,8 +1489,14 @@ def preview_page(message,html,saveAs,class_=None):
     f = open(saveAs,"w")
     f.write(html)
     f.close()
-    driver = webdriver.Chrome()
-    driver.get("file://"+saveAs)
+    options = webdriver.chrome.options.Options()
+    options.add_argument("no-sandbox")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=800,600")
+    options.add_argument("--disable-dev-shm-usage")
+    options.headless = True
+    driver = webdriver.Chrome(chrome_options=options)
+    driver.get("file://"+current_path+'/'+saveAs)
     time.sleep(4)
         # Returns and base64 encoded string into image
     if class_ != None:
@@ -1498,7 +1504,7 @@ def preview_page(message,html,saveAs,class_=None):
         elem.screenshot('./image.png')
     else:
         driver.save_screenshot('./image.png')
-    f = open("image.png","rb")
+    f = open("./image.png","rb")
     bot.send_photo(message.chat.id,f,caption="# HTML Preview")
     f.close()
     driver.quit()
