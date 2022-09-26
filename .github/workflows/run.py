@@ -823,28 +823,23 @@ def html_code_run(message,driver=None):
         f = open(saveAs,"w")
         f.write(code)
         f.close()
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+        
         # S-E-R
-        options = webdriver.ChromeOptions()
         options.add_argument("no-sandbox")
         options.add_argument("--disable-gpu")
         options.add_argument("--window-size=800,600")
         options.add_argument("--disable-dev-shm-usage")
-        options.set_headless()
-        host = "127.0.0.1"
-        driver = webdriver.Remote(
-                command_executor=f"http://{host}:4444/wd/hub",
-                desired_capabilities=DesiredCapabilities.CHROME,
-                options=options,
-            )
+        options.headless = True
+        driver = webdriver.Chrome(chrome_options=options)
         # S-E-R
         driver.get("https://google.com")
         time.sleep(4)
             # Returns and base64 encoded string into image
-        driver.save_screenshot('./image.png')
-        f = open("image.png","rb")
-        bot.send_photo(message.chat.id,f,caption="# HTML Preview")
-        f.close()
+        # driver.save_screenshot('./image.png')
+        # f = open("image.png","rb")
+        # bot.send_photo(message.chat.id,f,caption="# HTML Preview")
+        # f.close()
+        bot.reply_to(message,str(driver.title));
         driver.quit()
     except Exception as e:
         bot.reply_to(message,str(e))
