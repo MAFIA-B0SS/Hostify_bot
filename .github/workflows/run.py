@@ -1578,7 +1578,7 @@ def gen_code_code(message,lan):
         line_no += 1
     styledCode = re.sub(r'editor:(.*?):hightlight:(.*?):(.*?)',r"<span style='color:\2;background-color:\3;' class='hightlight'>"+r'\1'+"</span>",styledCode)
     styledCode = re.sub(r'editor:(.*?):hightlight',"<span class='hightlight'>"+r'\1'+"</span>",styledCode)
-    f = open(current_path+"/quiz_html.html","r")
+    f = open("./quiz_html.html","r")
     quiz_html = str(f.read())
     f.close()
     styledCode = styledCode.replace("(",html_style.setColor("(","grey"))
