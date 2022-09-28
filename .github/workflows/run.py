@@ -2224,7 +2224,7 @@ def en_user(message):
                     bot.reply_to(message,"Can't Translate")
                     return
                 
-        if len(userMessage.split(" ")) == 3:
+        if len(userMessage.split(" ")) == 2:
             theCommand = str(userMessage.split(" ")[0])
             if theCommand == "-»":
                 selectedLanguage = str(userMessage.split(" ")[1])
@@ -2406,7 +2406,7 @@ def ar_user(message):
                     bot.reply_to(message,"Can't Translate")
                     return
                 
-        if len(userMessage.split(" ")) == 3:
+        if len(userMessage.split(" ")) == 2:
             theCommand = str(userMessage.split(" ")[0])
             if theCommand == "-»":
                 selectedLanguage = str(userMessage.split(" ")[1])
