@@ -580,7 +580,7 @@ def lang_step(message):
         f.close()
         markup = types.ReplyKeyboardMarkup(row_width=2)
         for language in txtJson["Languages"]:
-            markup.add("get Commands "+str(language))
+            markup.add("-» "+str(language))
             
         bot.reply_to(message,"Available Languages:-",reply_markup=markup)
 
@@ -1696,7 +1696,7 @@ def en_getLanguages(message):
     f.close()
     markup = types.ReplyKeyboardMarkup(row_width=2)
     for language in txtJson["Languages"]:
-        markup.add("get Commands "+str(language))
+        markup.add("-» "+str(language))
         
     bot.reply_to(message,"Available Languages:-",reply_markup=markup)
 #BOT COMMANDS HANDLER
@@ -2225,9 +2225,9 @@ def en_user(message):
                     return
                 
         if len(userMessage.split(" ")) == 3:
-            theCommand = str(userMessage.split(" ")[0]+" "+userMessage.split(" ")[1])
-            if theCommand == "get Commands":
-                selectedLanguage = str(userMessage.split(" ")[2])
+            theCommand = str(userMessage.split(" ")[0])
+            if theCommand == "-»":
+                selectedLanguage = str(userMessage.split(" ")[1])
                 AllCommands = ""
                 f = open("commands.json","r")
                 txt = str(f.read())
@@ -2407,9 +2407,9 @@ def ar_user(message):
                     return
                 
         if len(userMessage.split(" ")) == 3:
-            theCommand = str(userMessage.split(" ")[0]+" "+userMessage.split(" ")[1])
-            if theCommand == "عرض اوامر":
-                selectedLanguage = str(userMessage.split(" ")[2])
+            theCommand = str(userMessage.split(" ")[0])
+            if theCommand == "-»":
+                selectedLanguage = str(userMessage.split(" ")[1])
                 AllCommands = ""
                 f = open("commands.json","r")
                 txt = str(f.read())
