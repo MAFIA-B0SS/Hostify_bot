@@ -1205,9 +1205,9 @@ def post_random_quiz():
             file_id = txtJson["Languages"][lan]["Quiz"][userLang][randomQuiz]["file_id"]
             explain = txtJson["Languages"][lan]["Quiz"][userLang][randomQuiz]["explain"]
             if file_id:
-                bot.send_photo("-1001604626385",file_id,caption=question)
+                bot.send_photo("-1001604626385",file_id,caption=question+" #"+str(lan))
             else:
-                bot.send_message("-1001604626385",question)
+                bot.send_message("-1001604626385",question+"\n#"+str(lan))
             bot.send_poll("-1001604626385","Read Above Question & Anwer",options,explanation=explain,correct_option_id=correct_option,type="quiz")
             return
     except:
