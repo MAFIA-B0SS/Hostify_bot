@@ -7,7 +7,7 @@ on:
   push:
     branches: [ "main" ]
   schedule:
-    - cron: '30 * * * *'
+    - cron: '* 3 * * *'
 
 permissions:
   contents: write
@@ -17,7 +17,7 @@ jobs:
   
     runs-on: ubuntu-latest
     env:
-      CODER_TOKEN: ${{secrets.CODER_NINJA_TOKEN}}
+      CODER_NINJA: ${{secrets.CODER_NINJA_TOKEN}}
     steps:
     - name: Setup Chrome
       # You may pin to the exact commit or the version.
