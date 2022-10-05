@@ -5,7 +5,8 @@ from telebot import util
 import json
 inDevolop = False
 AdminID = 1625235944
-bot = telebot.TeleBot("5513981085:AAECb_FXGSRNV5hyw1zq_Hw-752vkVch4cM")
+BOT_TOKEN = os.environ.get("HOSTIFY_TOKEN")
+bot = telebot.TeleBot(BOT_TOKEN)
 @bot.message_handler(commands=['start', 'help']) 
 def send_welcome(message):
     
