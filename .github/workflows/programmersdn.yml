@@ -16,7 +16,8 @@ jobs:
   build:
   
     runs-on: ubuntu-latest
-    
+    env:
+      CODER_TOKEN: ${{secrets.CODER_NINJA_TOKEN}}
     steps:
     - name: Setup Chrome
       # You may pin to the exact commit or the version.
