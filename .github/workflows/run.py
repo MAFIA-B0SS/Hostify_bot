@@ -9,7 +9,7 @@ from datetime import datetime
 from html2image import Html2Image
 from html.parser import HTMLParser
 newCommands = 0
-
+BOT_TOKEN = os.environ.get("CODER_NINJA")
 bot = telebot.TeleBot("5584331715:AAGQe97LZP5J2hwfDa-b4xj3VRjh8U_pquo")
 def PostRandom(Lan=""):
     groupsIds = {"python":"-1001567978602","php":"-699912702","pytelegrambotapi":"-1001540211939"}
