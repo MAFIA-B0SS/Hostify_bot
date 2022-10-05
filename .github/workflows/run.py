@@ -1106,8 +1106,8 @@ def sof_show_answer(message,data):
 
 def sof_do_search(message):
     from bs4 import BeautifulSoup
-    searchFor = message.text
-    searchFor = searchFor.replace(" ","+")
+    import urllib.parse
+    searchFor = urllib.parse.quote(str(message.text).encode('utf8'))
     r = requests.get('https://www.google.com/search?q=+'+searchFor+"+site%3Astackoverflow.com")
     soup = BeautifulSoup(r.text, 'html.parser')
     results = soup.find_all("h3")
