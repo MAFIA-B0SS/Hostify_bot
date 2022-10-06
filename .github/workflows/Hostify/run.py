@@ -7,7 +7,6 @@ inDevolop = False
 AdminID = 1625235944
 BOT_TOKEN = os.environ.get("HOSTIFY_TOKEN")
 bot = telebot.TeleBot(BOT_TOKEN)
-@bot.message_handler(commands=['start', 'help']) 
 if not os.path.exists("hosts.json"):
     try:
         chatInfo = bot.get_chat(-1001764050546)
@@ -19,7 +18,7 @@ if not os.path.exists("hosts.json"):
             new_file.write(downloaded_file)
     except Exception as e:
         bot.send_message(AdminID,str(e))
-
+@bot.message_handler(commands=['start', 'help']) 
 def send_welcome(message):
     
     bot.reply_to(message, "Welcome to hosts scanning bot Join Our @Hostify Channel To Know How's works")
