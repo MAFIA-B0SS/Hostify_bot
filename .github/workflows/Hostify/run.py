@@ -8,6 +8,18 @@ AdminID = 1625235944
 BOT_TOKEN = os.environ.get("HOSTIFY_TOKEN")
 bot = telebot.TeleBot(BOT_TOKEN)
 @bot.message_handler(commands=['start', 'help']) 
+if not os.path.exists("hosts.json"):
+    try:
+        chatInfo = bot.get_chat(-1001764050546)
+        fileId = chatInfo.pinned_message.document.file_id
+        file_name = chatInfo.pinned_message.document.file_name
+        file_info = bot.get_file(fileId)
+        downloaded_file = bot.download_file(file_info.file_path)
+        with open(file_name, 'wb') as new_file:
+            new_file.write(downloaded_file)
+    except Exception as e:
+        bot.send_message(AdminID,str(e))
+
 def send_welcome(message):
     
     bot.reply_to(message, "Welcome to hosts scanning bot Join Our @Hostify Channel To Know How's works")
@@ -202,6 +214,14 @@ def removeEmptyLines(txt):
             continue
         result+= str(line)+"\n"
     return result
+def UpdateHosts():
+    try:
+        f = open("hosts.json","rb")
+        msg = bot.send_document("-1001764050546",f)
+        bot.pin_chat_message("-1001764050546",msg.id)
+        f.close()
+    except:
+        something = 0
 def scanHost(text,message):
     #Check if Founded
     f = open("hosts.json","r")
@@ -256,6 +276,7 @@ def scanHost(text,message):
     toWrite = json.dumps(txtJson)
     f.write(toWrite)
     f.close()
+    UpdateHosts()
     bot.reply_to(message,"Scan Finished\n"+str(successScan)+" Host Scanned\n"+str(failedScan)+" Failed Scan\n*Note 4 scan allowed per request")
 def getServer(text):
     f = open("hosts.json","r")
@@ -394,7 +415,10 @@ def ipList(message):
         toWrite = json.dumps(txtJson)
         f.write(toWrite)
         f.close()
-        
+        f = open("hosts.json","rb")
+        msg = bot.send_document("-1001764050546",f)
+        bot.pin_chat_message("-1001764050546",msg.id)
+        f.close()
     except:
         something = 0
     bot.edit_message_text("Done :\nIP List:\n"+numberOfIps, chatId, str(Progress))
