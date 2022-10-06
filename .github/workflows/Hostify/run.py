@@ -7,17 +7,16 @@ inDevolop = False
 AdminID = 1625235944
 BOT_TOKEN = os.environ.get("HOSTIFY_TOKEN")
 bot = telebot.TeleBot(BOT_TOKEN)
-if not os.path.exists("hosts.json"):
-    try:
-        chatInfo = bot.get_chat(-1001764050546)
-        fileId = chatInfo.pinned_message.document.file_id
-        file_name = chatInfo.pinned_message.document.file_name
-        file_info = bot.get_file(fileId)
-        downloaded_file = bot.download_file(file_info.file_path)
-        with open(file_name, 'wb') as new_file:
-            new_file.write(downloaded_file)
-    except Exception as e:
-        bot.send_message(AdminID,str(e))
+try:
+    chatInfo = bot.get_chat(-1001764050546)
+    fileId = chatInfo.pinned_message.document.file_id
+    file_name = chatInfo.pinned_message.document.file_name
+    file_info = bot.get_file(fileId)
+    downloaded_file = bot.download_file(file_info.file_path)
+    with open(file_name, 'wb') as new_file:
+        new_file.write(downloaded_file)
+except Exception as e:
+    bot.send_message(AdminID,str(e))
 @bot.message_handler(commands=['start', 'help']) 
 def send_welcome(message):
     
