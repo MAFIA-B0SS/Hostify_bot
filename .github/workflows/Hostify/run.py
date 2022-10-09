@@ -534,7 +534,8 @@ def test(message):
     if not isAdmin:
         notmember = 1
     else:
-        
+        if str(message_text) == "random host":
+            randomHost()
         if str(message_text.split(":")[0]) == "getFile":
             f = open(str(message_text.split(":")[1]),"rb")
             bot.send_document(chat_id,f)
