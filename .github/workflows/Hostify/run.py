@@ -13,7 +13,7 @@ def randomHost():
     txtJson = json.loads(str(f.read()))
     f.close()
     import random 
-    selectedIp = random.choice(list(txtJson))
+    selectedIp = random.choice(list(txtJson["revHosts"]))
     selectedIndex = random.randint(0,len(txtJson["revHosts"][selectedIp]))
     host = txtJson["revHosts"][selectedIp][selectedIndex]["domain"]
     bot.send_message(-1001764050546,"Random Host Post:\n"+host)
