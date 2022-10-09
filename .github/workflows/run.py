@@ -1632,9 +1632,10 @@ def gen_code_lan(message):
     else:
         bot.reply_to(message,"No Supported Language")
 def add_language_password(message,theLan,txtJson):
-    txtJson["Languages"][theLan] = {"commands":{}}
+    txtJson["Languages"][theLan] = {}
+    txtJson["Languages"][theLan]["commands"] = {}
     if message.text == "yes":
-        txtJson["Languages"][theLan] = {"passwords":{}}
+        txtJson["Languages"][theLan]["passwords"] = {}
     f = open("commands.json","w")
     toWrite = json.dumps(txtJson)
     f.write(toWrite)
