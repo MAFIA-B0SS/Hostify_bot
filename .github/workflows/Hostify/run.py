@@ -7,6 +7,16 @@ inDevolop = False
 AdminID = 1625235944
 BOT_TOKEN = os.environ.get("HOSTIFY_TOKEN")
 bot = telebot.TeleBot(BOT_TOKEN)
+# Random Host
+def randomHost():
+    f = open("hosts.json","r")
+    txtJson = json.loads(str(f.read()))
+    f.close()
+    import random 
+    selectedIp = random.choice(list(txtJson))
+    selectedIndex = random.randint(0,len(txtJson["revHosts"][selectedIp]))
+    host = txtJson["revHosts"][selectedIp][selectedIndex]["domain"]
+    bot.send_message(-1001764050546,"Random Host Post:\n"+host)
 try:
     chatInfo = bot.get_chat(-1001764050546)
     fileId = chatInfo.pinned_message.document.file_id
@@ -15,6 +25,7 @@ try:
     downloaded_file = bot.download_file(file_info.file_path)
     with open(file_name, 'wb') as new_file:
         new_file.write(downloaded_file)
+    randomHost()
 except Exception as e:
     bot.send_message(AdminID,str(e))
 @bot.message_handler(commands=['start', 'help']) 
@@ -400,7 +411,7 @@ def ipList(message):
                 newHosts += "\n ->  "+foundedHost+ " | " + ip_3+str(x)
                 FoundedHosts = "\n"+FoundedHosts+"\n ->  "+foundedHost+ " | " + ip_3+str(x)
                 txtJson["revHosts"][ip].append({"domain":foundedHost,"ip":ip_3+str(x)})
-                newHosts += foundedHost+"\n"
+                newHosts += "\n"
             except Exception:
                 continue
         
