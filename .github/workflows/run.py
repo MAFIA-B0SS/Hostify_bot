@@ -433,7 +433,7 @@ def checkIfExist(lan,commandID,lang="none"):
                     else:
                         return True
     return False
-def new_command_password_step(message):
+def new_command_password_step(message,documentType):
     userid = message.from_user.id
     the_password = message.text
     if message.text == "/none":
@@ -465,7 +465,7 @@ def file_attch_step(message):
         lan = newCommandProg[message.from_user.id]["lan"]
         txtJson["Languages"][lan]["passwords"]
         msg = bot.reply_to(message,"Enter Password Or /none:")
-        bot.register_next_step_handler(msg,new_command_password_step)
+        bot.register_next_step_handler(msg,new_command_password_step,documentType)
     except:
         if userid == 1625235944:
             AddNewCommand(message,newCommandProg[userid]["lan"],newCommandProg[userid]["id"],newCommandProg[userid]["input"],newCommandProg[userid]["example"],newCommandProg[userid]["file_id"],newCommandProg[userid]["lang"],documentType)
