@@ -316,7 +316,20 @@ def goClean(text):
         removeEffect = removeIp.split("->")[1]
         result = result + str(removeEffect)+"\n"
     return result
-  
+def scanPorts(ip):
+    url = "https://hackertarget.com/nmap-online-port-scanner/"
+    data = {"theinput":str(ip),"thetest":"namp","name_of_nonce_field":"f095035ffb","_wp_http_referer":"/nmap-online-port-scanner/"}
+    r = requests.post(url,data=data)
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(r.text, 'html.parser')
+    pres = soup.find_all("pre", id='formResponse')
+    the_response = ""
+    if len(pres) > 0:
+        for x in range(0,len(pres)):
+            the_response += str(pres[x].string)
+        return the_response
+    else:
+        return 0
 def hostOptions(message,host):
     result = ""
     try:
@@ -695,8 +708,15 @@ def test(message):
         theServer = getServer(str(message_text.split(":")[1]))
         bot.reply_to(message,"Servers: \n"+theServer)
         
-    elif str(message_text.split(":")[0]) != "":
+    elif str(message_text.split(":")[1]) != "":
         theCommand = str(message_text.split(":")[0])
+        theInput = str(message_text.split(":")[1])
+        if theCommand == "nmap":
+            result = scanPorts(theInput)
+            if result == 0:
+                bot.reply_to(message,"Failed To Scan This Host")
+            else:
+                bot.reply_to(message,str(result)+"\nBy: @Hostify_bot")
         if theCommand == "getInfo":
             try:
                 user_ip = str(message_text.split(":")[1])
