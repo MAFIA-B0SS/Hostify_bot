@@ -433,6 +433,19 @@ def checkIfExist(lan,commandID,lang="none"):
                     else:
                         return True
     return False
+def new_command_password_step(message):
+    userid = message.from_user.id
+    the_password = message.text
+    if message.text == "/none":
+        if userid == 1625235944:
+            AddNewCommand(message,newCommandProg[userid]["lan"],newCommandProg[userid]["id"],newCommandProg[userid]["input"],newCommandProg[userid]["example"],newCommandProg[userid]["file_id"],newCommandProg[userid]["lang"],documentType)
+        else:
+            AddNewCommandUser(message,newCommandProg[userid]["lan"],newCommandProg[userid]["id"],newCommandProg[userid]["input"],newCommandProg[userid]["example"],newCommandProg[userid]["file_id"],newCommandProg[userid]["lang"],documentType)
+    else:
+        if userid == 1625235944:
+            AddNewCommand(message,newCommandProg[userid]["lan"],newCommandProg[userid]["id"],newCommandProg[userid]["input"],newCommandProg[userid]["example"],newCommandProg[userid]["file_id"],newCommandProg[userid]["lang"],documentType,the_password)
+        else:
+            AddNewCommandUser(message,newCommandProg[userid]["lan"],newCommandProg[userid]["id"],newCommandProg[userid]["input"],newCommandProg[userid]["example"],newCommandProg[userid]["file_id"],newCommandProg[userid]["lang"],documentType,the_password)
 def file_attch_step(message):
     documentType = message.content_type
     if str(message.content_type) != "text":
@@ -445,10 +458,19 @@ def file_attch_step(message):
     else:
         newCommandProg[message.from_user.id]["file_id"] = ""
     userid = message.from_user.id
-    if userid == 1625235944:
-        AddNewCommand(message,newCommandProg[userid]["lan"],newCommandProg[userid]["id"],newCommandProg[userid]["input"],newCommandProg[userid]["example"],newCommandProg[userid]["file_id"],newCommandProg[userid]["lang"],documentType)
-    else:
-        AddNewCommandUser(message,newCommandProg[userid]["lan"],newCommandProg[userid]["id"],newCommandProg[userid]["input"],newCommandProg[userid]["example"],newCommandProg[userid]["file_id"],newCommandProg[userid]["lang"],documentType)
+    try:
+        f = open("commands.json",'r')
+        txtJson = json.loads(f.read())
+        f.close()
+        lan = newCommandProg[message.from_user.id]["lan"]
+        txtJson["Languages"][lan]["passwords"]
+        msg = bot.reply_to(message,"Enter Password Or /none:")
+        bot.register_next_step_handler(msg,new_command_password_step)
+    except:
+        if userid == 1625235944:
+            AddNewCommand(message,newCommandProg[userid]["lan"],newCommandProg[userid]["id"],newCommandProg[userid]["input"],newCommandProg[userid]["example"],newCommandProg[userid]["file_id"],newCommandProg[userid]["lang"],documentType)
+        else:
+            AddNewCommandUser(message,newCommandProg[userid]["lan"],newCommandProg[userid]["id"],newCommandProg[userid]["input"],newCommandProg[userid]["example"],newCommandProg[userid]["file_id"],newCommandProg[userid]["lang"],documentType)
 
 def example_step(message):
     if str(message.text) == "/cancel":
@@ -880,7 +902,7 @@ def newCommandLang(commandID,selectedLanguage,lang="en"):
     f.close()
     return "Updated Successfully"
 
-def AddNewCommandUser(message,commandLanguage,command,commandInput,commandExample,file_id="",lang="en",docType="document"):
+def AddNewCommandUser(message,commandLanguage,command,commandInput,commandExample,file_id="",lang="en",docType="document",password=None):
     f = open("usersPost.json","r")
     txtJson = json.loads(f.read())
     f.close()
@@ -889,10 +911,11 @@ def AddNewCommandUser(message,commandLanguage,command,commandInput,commandExampl
     msg = bot.send_message("-1001604626385",question)
     bot.send_poll("-1001604626385","is that's right ?\n id : #"+str(msg.id),["yes","no"],reply_to_message_id=msg.id)
     try:
-        txtJson["users"][message.from_user.id]["Pending"].append({"username":message.from_user.username,"pid":msg.id,"id":command,"input":commandInput,"lan":commandLanguage,"example":commandExample,"file_id":file_id,"lang":lang,"type":docType})
+        txtJson["users"][message.from_user.id]["Pending"].append({"username":message.from_user.username,"pid":msg.id,"id":command,"input":commandInput,"lan":commandLanguage,"example":commandExample,"file_id":file_id,"lang":lang,"type":docType,"password":password})
     except:
         txtJson["users"][message.from_user.id] = {"Pending":[],"Published":[]}
-        txtJson["users"][message.from_user.id]["Pending"].append({"username":message.from_user.username,"pid":msg.id,"id":command,"input":commandInput,"lan":commandLanguage,"example":commandExample,"file_id":file_id,"lang":lang,"type":docType})
+        txtJson["users"][message.from_user.id]["Pending"].append({"username":message.from_user.username,"pid":msg.id,"id":command,"input":commandInput,"lan":commandLanguage,"example":commandExample,"file_id":file_id,"lang":lang,"type":docType,"password":password})
+     
     f = open("usersPost.json","w")
     toWrite = json.dumps(txtJson)
     f.write(toWrite)
@@ -903,7 +926,7 @@ def AddNewCommandUser(message,commandLanguage,command,commandInput,commandExampl
     else:
         bot.reply_to(message,"تم اضافة الامر وهو في لائحة التحقق قم برؤية التفاعلات هنا @Programmers_Code")
 
-def AddNewCommand(message,commandLanguage,command,commandInput,commandExample,file_id="",lang="en",docType="document"):
+def AddNewCommand(message,commandLanguage,command,commandInput,commandExample,file_id="",lang="en",docType="document",password=None):
     f = open("commands.json","r")
     txt = str(f.read())
     txtJson = json.loads(txt)
@@ -938,6 +961,8 @@ def AddNewCommand(message,commandLanguage,command,commandInput,commandExample,fi
     txtJson["Languages"][commandLanguage]["commands"][command][lang]["example"] = smartExample
     txtJson["Languages"][commandLanguage]["commands"][command][lang]["fileId"] = file_id
     txtJson["Languages"][commandLanguage]["commands"][command][lang]["type"] = docType
+    if password:
+        txtJson["Languages"][commandLanguage]["commands"][command][lang]["password"] = str(password)
     jsonContent = json.dumps(txtJson)
     f = open("commands.json","w")
     f.write(jsonContent)
@@ -1606,6 +1631,62 @@ def gen_code_lan(message):
         bot.register_next_step_handler(msg,gen_code_code,lan)
     else:
         bot.reply_to(message,"No Supported Language")
+def add_language_password(message,theLan,txtJson):
+    txtJson["Languages"][theLan] = {"commands":{}}
+    if message.text == "yes":
+        txtJson["Languages"][theLan] = {"passwords":{}}
+    f = open("commands.json","w")
+    toWrite = json.dumps(txtJson)
+    f.write(toWrite)
+    f.close()
+    bot.reply_to(message,"Languages Updated !\n"+theLan+" New Added")
+def get_protected_example(message,the_example,txtJson):
+    the_password = the_example["password"]
+    if message.text == the_password:
+        file_id = str(the_example["fileId"])
+        if file_id != "":
+            documentType = "document"
+            try:
+                documentType = str(the_example["type"])
+            except:
+                something=1
+            file_info = bot.get_file(file_id)
+            file_path = file_info.file_path
+            file_name = file_path.split("/")[len(file_path.split("/"))-1]
+            download_url = bot.get_file_url(file_id)
+            try:
+                r = requests.get(download_url).content
+                with open(file_name, 'wb') as new_file:
+                    new_file.write(r)
+                f = open(file_name,"rb")
+                if documentType == "photo":
+                    bot.send_photo(message.chat.id,file_id,caption="Photo By @PLibrary_bot")
+                else:
+                    bot.send_document(message.chat.id,f)
+                f.close()
+                os.remove(file_name)
+            except Exception as e:
+                bot.send_message(AdminID,e)
+        if str(language) == "html":
+            reply = "#"+str(language)+"\n"
+            Example = str(txtJson["Languages"][language]["commands"][command][userLang]["example"])
+            
+            reply += Example
+            bot.reply_to(message,reply,disable_web_page_preview=True)
+            return
+        reply = "#"+str(language)+"\n"
+        Example = str(txtJson["Languages"][language]["commands"][command][userLang]["example"])
+        
+        # Example = escape(Example)
+        StyledExample =styleExample(Example)
+        reply += StyledExample
+        
+        try:
+            bot.reply_to(message,reply,parse_mode="html",disable_web_page_preview=True)
+        except:
+            bot.reply_to(message,"This Example Has Error Sent To Admin Try Later")
+            bot.send_message(AdminID,userMessage+"\n Example Has Error Maybe not ended tag")
+        return
 #BOT COMMANDS HANDLER
 @bot.message_handler(commands=['html'])
 def LaunchHtml(message):
@@ -1922,12 +2003,9 @@ def admin_rep(message):
             txtJson["Languages"][theLan]
             return bot.reply_to(message,"Language Allready Exists !")
         except:
-            txtJson["Languages"][theLan] = {"commands":{}}
-            f = open("commands.json","w")
-            toWrite = json.dumps(txtJson)
-            f.write(toWrite)
-            f.close()
-            bot.reply_to(message,"Languages Updated !\n"+theLan+" New Added")
+            msg = bot.reply_to(message,"Is it containing Passwords")
+            bot.register_next_step_handler(msg,add_language_password,theLan,txtJson)
+            
     if theCommand == "random post":
         theLan = str(str(splitByLine[0]).split(":")[1])
         PostRandom(theLan)
@@ -2166,6 +2244,15 @@ def en_user(message):
             if intor == "":
                 continue
             if userMessage == intor:
+                try:
+                    password = txtJson["Languages"][language]["commands"][command][userLang]["password"]
+                    if password:
+                        the_example = txtJson["Languages"][language]["commands"][command][userLang]
+                        msg = bot.reply_to(message,"Password Required Enter Password:")
+                        bot.register_next_step_handler(msg,get_protected_example,the_example,txtJson)
+                        return
+                except:
+                    something=1
                 file_id = str(txtJson["Languages"][language]["commands"][command][userLang]["fileId"])
                 if file_id != "":
                     documentType = "document"
@@ -2362,6 +2449,15 @@ def ar_user(message):
             if intor == "":
                 continue
             if userMessage == intor:
+                try:
+                    password = txtJson["Languages"][language]["commands"][command][userLang]["password"]
+                    if password:
+                        the_example = txtJson["Languages"][language]["commands"][command][userLang]
+                        msg = bot.reply_to(message,"هذا المثال يحتاج الي كلمة مرور ادخل كلمة المرور:")
+                        bot.register_next_step_handler(msg,get_protected_example,the_example,txtJson)
+                        return
+                except:
+                    something=1
                 if str(language) == "html":
                     reply = "#"+str(language)+"\n"
                     Example = str(txtJson["Languages"][language]["commands"][command][userLang]["example"])
